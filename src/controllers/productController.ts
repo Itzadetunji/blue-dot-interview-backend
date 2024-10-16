@@ -24,7 +24,7 @@ export const createProduct = async (req: Request, res: Response) => {
 };
 
 // Get all products with filters
-export const getAllProducts = async (req: any, res: any) => {
+export const getAllProducts = async (req: Request, res: any) => {
 	try {
 		const { name, category, minPrice, maxPrice } = req.query;
 
@@ -55,7 +55,7 @@ export const getAllProducts = async (req: any, res: any) => {
 };
 
 // Get a single product by ID
-export const getProductById = async (req: any, res: any) => {
+export const getProductById = async (req: Request, res: any) => {
 	try {
 		const product = await ProductModel.findById(req.params.id).populate(
 			"category",
@@ -73,7 +73,7 @@ export const getProductById = async (req: any, res: any) => {
 };
 
 // Update a product
-export const updateProduct = async (req: any, res: any) => {
+export const updateProduct = async (req: Request, res: any) => {
 	try {
 		const { name, description, price, category, image } = req.body;
 
@@ -105,7 +105,7 @@ export const updateProduct = async (req: any, res: any) => {
 };
 
 // Delete a product
-export const deleteProduct = async (req: any, res: any) => {
+export const deleteProduct = async (req: Request, res: any) => {
 	try {
 		// Find the product and ensure the logged-in user is the owner
 		const product = await ProductModel.findOneAndDelete({

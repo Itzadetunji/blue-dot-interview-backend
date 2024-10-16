@@ -24,7 +24,7 @@ export const createCategory = async (req: Request, res: Response) => {
 };
 
 // Get all categories
-export const getAllCategories = async (req: Request, res: Response) => {
+export const getAllCategories = async (_: Request, res: Response) => {
 	try {
 		const categories = await CategoryModel.find({});
 		res.status(200).json(categories);

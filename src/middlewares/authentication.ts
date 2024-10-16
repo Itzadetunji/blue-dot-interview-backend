@@ -10,7 +10,7 @@ interface JwtPayload {
 	email: string;
 }
 
-const auth = async (req: Request, res: Response, next: NextFunction) => {
+const auth = async (req: Request, _: Response, next: NextFunction) => {
 	// Check for authorization header
 	const authHeader = req.headers.authorization;
 

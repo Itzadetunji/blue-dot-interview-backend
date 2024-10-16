@@ -1,10 +1,9 @@
-import express from "express";
-import cors from "cors";
-import helmet from "helmet";
-import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import { json, urlencoded } from "express";
-import { errorHandler } from "./middlewares/errorHandler";
+import cors from "cors";
+import dotenv from "dotenv";
+import express, { json, urlencoded } from "express";
+import helmet from "helmet";
+import errorHandler from "./middlewares/errorHandler";
 import routes from "./routes";
 import connectDB from "./utils/db/connect";
 
