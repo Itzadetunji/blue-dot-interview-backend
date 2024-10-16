@@ -5,7 +5,8 @@ import mongoose from "mongoose";
 // Create a new product
 export const createProduct = async (req: Request, res: Response) => {
 	try {
-		const { name, description, price, category, image } = req.body;
+		const { name, description, price, category, image, totalInStock } =
+			req.body;
 
 		const product = new ProductModel({
 			name,
@@ -13,12 +14,16 @@ export const createProduct = async (req: Request, res: Response) => {
 			price,
 			category: new mongoose.Types.ObjectId(category), // Convert category to ObjectId
 			image,
+			totalInStock,
 			owner: req.user?.userId, // Attach the logged-in user as the owner
 		});
+
+		console.log("dqed");
 
 		await product.save();
 		res.status(201).json(product);
 	} catch (error) {
+		console.log(error);
 		res.status(500).json({ error: "Error creating product" });
 	}
 };
@@ -26,11 +31,30 @@ export const createProduct = async (req: Request, res: Response) => {
 // Get all products owned by the logged-in user
 export const getMyProducts = async (req: any, res: any) => {
   try {
-    // Fetch all products where the owner is the logged-in user
-    const products = await ProductModel.find({ owner: req.user?.userId }).populate(
-      "category",
-      "name"
-    );
+    const { name, category, minPrice, maxPrice } = req.query;
+
+    // Initialize filter object for products
+    const filter: any = {
+      owner: req.user?.userId, // Only fetch products owned by the logged-in user
+    };
+
+    // Add filters based on query parameters
+    if (name) {
+      filter.name = { $regex: name, $options: "i" }; // Case-insensitive search for product name
+    }
+
+    if (category) {
+      filter.category = category; // Filter by category
+    }
+
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = Number(minPrice); // Filter by minimum price
+      if (maxPrice) filter.price.$lte = Number(maxPrice); // Filter by maximum price
+    }
+
+    // Fetch products owned by the user with the applied filters
+    const products = await ProductModel.find(filter).populate("category", "name");
 
     // Check if products were found
     if (!products || products.length === 0) {
