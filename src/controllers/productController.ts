@@ -23,6 +23,28 @@ export const createProduct = async (req: Request, res: Response) => {
 	}
 };
 
+// Get all products owned by the logged-in user
+export const getMyProducts = async (req: any, res: any) => {
+  try {
+    // Fetch all products where the owner is the logged-in user
+    const products = await ProductModel.find({ owner: req.user?.userId }).populate(
+      "category",
+      "name"
+    );
+
+    // Check if products were found
+    if (!products || products.length === 0) {
+      return res.status(404).json({ message: "No products found for the user" });
+    }
+
+    // Return the products in the response
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching user's products" });
+  }
+};
+
+
 // Get all products with filters
 export const getAllProducts = async (req: Request, res: any) => {
 	try {

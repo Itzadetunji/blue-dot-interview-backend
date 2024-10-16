@@ -5,6 +5,7 @@ import {
   getProductById,
   updateProduct,
   deleteProduct,
+  getMyProducts,
 } from '../controllers/productController';
 import auth from '../middlewares/authentication';
 
@@ -12,6 +13,9 @@ const router = express.Router();
 
 // Route to create a product
 router.post('/products', auth, createProduct);
+
+// Route to get all mt products with filtering
+router.get("/my-products", auth, getMyProducts)
 
 // Route to get all products with filtering
 router.get('/products', getAllProducts);
