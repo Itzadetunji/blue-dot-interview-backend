@@ -27,6 +27,11 @@ const productSchema = new Schema({
 		required: true,
 		min: 0, // Ensure stock is non-negative
 	},
+	totalSales: {
+    type: Number,
+    default: 0, // Initialize sales to 0
+    min: 0, // Ensure total sales is non-negative
+  },
 	owner: {
 		type: Schema.Types.ObjectId,
 		ref: "User", // Reference to the User model

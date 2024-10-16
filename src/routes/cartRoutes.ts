@@ -5,6 +5,7 @@ import {
 	updateCartItem,
 	removeItemFromCart,
 	clearCart,
+	updateCart,
 } from "../controllers/cartController";
 import auth from "../middlewares/authentication"; // Path to auth middleware
 
@@ -17,7 +18,9 @@ router.get("/cart", auth, getUserCart);
 router.post("/cart", auth, addItemToCart);
 
 // Update the quantity of a product in the cart
-router.put("/cart", auth, updateCartItem);
+router.put("/cart", auth, updateCart);
+
+router.put("/cart/item", auth, updateCartItem);
 
 // Remove a product from the user's cart
 router.delete("/cart/:productId", auth, removeItemFromCart);

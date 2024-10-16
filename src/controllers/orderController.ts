@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import OrderModel from "../models/order";
 import CartModel from "../models/cart";
+import ProductModel from "../models/product";
 
 interface CartItem {
 	product: any; // After populate, this will be a full Product document
@@ -14,7 +15,7 @@ export const createOrder = async (req: any, res: any) => {
 			items: CartItem[]; // Explicitly typing the populated items array
 		}>({
 			path: "items.product",
-			select: "price _id", // Only select the necessary fields from Product
+			select: "price _id totalSales totalInStock", // Also populate totalSales and totalInStock
 		});
 
 		// Log the cart to verify its contents
@@ -49,6 +50,23 @@ export const createOrder = async (req: any, res: any) => {
 		console.log("Order before save:", order);
 
 		await order.save();
+
+		// Update totalSales and totalInStock for each product in the cart
+		for (const item of cart.items) {
+			const product = await ProductModel.findById(item.product._id);
+
+			if (product) {
+				product.totalSales += item.quantity;
+				product.totalInStock -= item.quantity;
+
+				// Ensure stock doesn't drop below zero (for safety)
+				if (product.totalInStock < 0) {
+					product.totalInStock = 0;
+				}
+
+				await product.save();
+			}
+		}
 
 		// Clear the cart after order creation
 		cart.items.splice(0, cart.items.length); // Splice the items array to empty it

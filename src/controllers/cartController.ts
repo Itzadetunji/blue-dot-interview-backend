@@ -5,10 +5,14 @@ import ProductModel from "../models/product";
 // Get the cart for the current user
 export const getUserCart = async (req: any, res: any) => {
 	try {
-		const cart = await CartModel.findOne({ user: req.user?.userId }).populate(
-			"items.product",
-			"name price"
-		);
+		const cart = await CartModel.findOne({ user: req.user?.userId }).populate({
+			path: "items.product",
+			select: "name price description category image totalInStock",
+			populate: {
+				path: "category",
+				select: "name _id",
+			},
+		});
 
 		if (!cart) {
 			return res.status(404).json({ message: "Cart not found" });
@@ -136,6 +140,61 @@ export const updateCartItem = async (req: any, res: any) => {
 		res.status(500).json({ error: "Error updating cart item" });
 	}
 };
+
+// Update the full cart
+export const updateCart = async (req: any, res: any) => {
+  const { items } = req.body; // Expecting an array of { productId, quantity } pairs
+
+  try {
+    // Find the user's cart
+    const cart = await CartModel.findOne({ user: req.user?.userId });
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    // Iterate through the items array and update the cart accordingly
+    for (const { productId, quantity } of items) {
+      // Find the item in the cart
+      const itemIndex = cart.items.findIndex(
+        (item: any) => item.product.toString() === productId
+      );
+
+      // Check if the product exists
+      const product = await ProductModel.findById(productId);
+      if (!product) {
+        return res.status(404).json({ message: `Product with ID ${productId} not found` });
+      }
+
+      // Check if the quantity being updated does not exceed the total stock available
+      if (quantity > product.totalInStock) {
+        return res.status(400).json({
+          message: `Cannot update ${product.name} to more than ${product.totalInStock} units. Stock limit exceeded.`,
+        });
+      }
+
+      if (itemIndex > -1) {
+        // If the item is already in the cart, update the quantity
+        if (quantity > 0) {
+          cart.items[itemIndex].quantity = quantity;
+        } else {
+          // Remove the item if the quantity is 0 or less
+          cart.items.splice(itemIndex, 1);
+        }
+      } else if (quantity > 0) {
+        // If the item is not in the cart and the quantity is > 0, add the item to the cart
+        cart.items.push({ product: productId, quantity });
+      }
+    }
+
+    cart.updatedAt = new Date();
+    await cart.save();
+
+    res.status(200).json(cart);
+  } catch (error) {
+    res.status(500).json({ error: "Error updating cart" });
+  }
+};
+
 
 // Remove an item from the cart
 export const removeItemFromCart = async (req: any, res: any) => {
