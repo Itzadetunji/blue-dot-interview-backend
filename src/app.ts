@@ -17,7 +17,7 @@ connectDB(process.env.DB_CONN_STRING as string);
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors({ credentials: true, origin: true }));
 app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
