@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 // Define JWT payload interface
 interface JwtPayload {
 	userId: string;
-	username: string;
 	fullName: string;
 	email: string;
 }
@@ -27,7 +26,6 @@ const auth = async (req: Request, _: Response, next: NextFunction) => {
 		// Attach the user information from the JWT payload to the request object
 		req.user = {
 			userId: payload.userId,
-			username: payload.username,
 			fullName: payload.fullName,
 			email: payload.email,
 		};

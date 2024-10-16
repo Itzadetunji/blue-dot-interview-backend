@@ -4,10 +4,10 @@ import { StatusCodes } from "http-status-codes"; // Use for clean status codes
 
 // Register user (Create account)
 export const register = async (req: any, res: any): Promise<any> => {
-	const { username, fullName, email, password } = req.body;
+	const { fullName, email, password } = req.body;
 
 	try {
-		// Check if the email or username already exists
+		// Check if the email already exists
 		let user = await User.findOne({ email });
 		if (user) {
 			return res
@@ -15,15 +15,8 @@ export const register = async (req: any, res: any): Promise<any> => {
 				.json({ message: "Email already in use" });
 		}
 
-		user = await User.findOne({ username });
-		if (user) {
-			return res
-				.status(StatusCodes.BAD_REQUEST)
-				.json({ message: "Username already in use" });
-		}
-
 		// Create a new user
-		const newUser = new User({ username, fullName, email, password });
+		const newUser = new User({ fullName, email, password });
 		await newUser.save();
 
 		// Generate JWT token

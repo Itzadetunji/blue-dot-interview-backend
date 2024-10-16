@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 
 // Interface for the User document
 interface IUser extends Document {
-	username: string;
 	fullName: string;
 	email: string;
 	password: string;
@@ -15,13 +14,6 @@ interface IUser extends Document {
 
 // Create the User schema
 const UserSchema: Schema<IUser> = new mongoose.Schema({
-	username: {
-		type: String,
-		required: [true, "Please provide a username"],
-		unique: true,
-		minlength: 3,
-		maxlength: 50,
-	},
 	fullName: {
 		type: String,
 		required: [true, "Please provide full name"],
@@ -58,7 +50,6 @@ UserSchema.methods.createJWT = function (): string {
 	return jwt.sign(
 		{
 			userId: this._id,
-			username: this.username,
 			email: this.email,
 		},
 		process.env.JWT_SECRET as string,
