@@ -15,7 +15,7 @@ export const getUserCart = async (req: any, res: any) => {
 		});
 
 		if (!cart) {
-			return res.status(200).json({ user: req.user?.userId });
+			return res.status(200).json({ user: req.user?.userId, items: [] });
 		}
 
 		res.status(200).json(cart);
@@ -38,7 +38,7 @@ export const addItemToCart = async (req: any, res: any) => {
 		}
 
 		// Find the user's cart
-		let cart = await CartModel.findOne({ user: req?.user?.userId, items: [] });
+		let cart = await CartModel.findOne({ user: req.user?.userId });
 
 		// Get the current quantity of the product in the cart
 		let currentCartQuantity = 0;
