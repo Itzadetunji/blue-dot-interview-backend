@@ -58,7 +58,7 @@ export const getMyProducts = async (req: any, res: any) => {
 
     // Check if products were found
     if (!products || products.length === 0) {
-      return res.status(404).json({ message: "No products found for the user" });
+      return res.status(404).json([]);
     }
 
     // Return the products in the response
