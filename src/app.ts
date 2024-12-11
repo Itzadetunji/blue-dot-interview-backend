@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import express, { json, urlencoded } from "express";
 import helmet from "helmet";
 import errorHandler from "./middlewares/errorHandler";
-import routes from "./routes";
+import v1Routes from "./routes/v1";
 import connectDB from "./utils/db/connect";
 
 // Load environment variables
@@ -22,8 +22,8 @@ app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Routes
-app.use("/api", routes);
+// Routes v1
+app.use("/api", v1Routes);
 
 // Error handling
 app.use(errorHandler);
